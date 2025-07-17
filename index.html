@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototyping and Validation of Biochar-SODIS Water Purification System</title>
+    <style>
+        :root {
+            --primary: #2c7873;
+            --primary-dark: #1a4a47;
+            --secondary: #6fb98f;
+            --accent: #ff9a3c;
+            --light: #f2f2f2;
+            --dark: #333;
+            --darker: #222;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --text: #444;
+            --text-light: #666;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+            animation: fadeInDown 1s ease;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 1.5s ease;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent);
+        }
+        
+        h3 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .highlight-box {
+            background-color: rgba(111, 185, 143, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .hypothesis {
+            background-color: rgba(255, 154, 60, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .hypothesis h3 {
+            color: var(--accent);
+        }
+        
+        /* Interactive Flowchart */
+        .flowchart-container {
+            margin: 2rem 0;
+        }
+        
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            padding: 1rem 0;
+        }
+        
+        .flow-step {
+            background: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+            border-top: 3px solid var(--primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .flow-step:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .flow-step.active {
+            border-top-color: var(--accent);
+            background-color: rgba(44, 120, 115, 0.05);
+        }
+        
+        .flow-step-number {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+        
+        .flow-step.active .flow-step-number {
+            background: var(--accent);
+        }
+        
+        .flow-step-title {
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            padding-left: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .flow-step-content {
+            padding-left: 2rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .flow-step.active .flow-step-content {
+            max-height: 500px;
+        }
+        
+        .flow-step-list {
+            list-style-type: none;
+        }
+        
+        .flow-step-list li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .flow-step-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .flow-step-list li strong {
+            color: var(--primary);
+        }
+        
+        .science-details {
+            background-color: rgba(44, 120, 115, 0.05);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .science-details h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .science-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .science-item {
+            background: white;
+            padding: 0.6rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .science-item-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+        
+        .science-item-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .connector {
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--secondary);
+            z-index: 1;
+        }
+        
+        /* Responsive Table */
+        .relevance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .relevance-table th, .relevance-table td {
+            padding: 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .relevance-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .relevance-table tr:nth-child(even) {
+            background-color: rgba(111, 185, 143, 0.1);
+        }
+        
+        .relevance-table tr:hover {
+            background-color: rgba(44, 120, 115, 0.1);
+        }
+        
+        /* Improvements Section */
+        .improvements {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .improvement-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-top: 3px solid var(--accent);
+            transition: transform 0.3s ease;
+        }
+        
+        .improvement-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .improvement-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        footer {
+            background: var(--darker);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            header {
+                padding: 2rem 1rem;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .container {
+                margin: 2rem auto;
+            }
+            
+            .section {
+                padding: 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            h3 {
+                font-size: 1.4rem;
+            }
+            
+            .flow-step {
+                padding: 1.5rem;
+            }
+            
+            .flow-step-number {
+                width: 35px;
+                height: 35px;
+                font-size: 1.1rem;
+                top: -15px;
+            }
+            
+            .improvements {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Prototyping and Validation of Biochar-SODIS Water Purification System</h1>
+        <p class="subtitle">An integrated, low-cost solution combining biochar filtration with solar disinfection for comprehensive water purification</p>
+    </header>
+    
+    <div class="container">
+        <section class="section">
+            <h2>Integrated System Overview</h2>
+            <p>This all-in-one system combines biochar filtration with enhanced solar disinfection (SODIS) to purify water from diverse sources. The integrated approach addresses physical, chemical, and biological contaminants through a multi-stage process using locally available materials and solar energy.</p>
+            
+            <div class="highlight-box">
+                <h3>Key Features</h3>
+                <ul class="flow-step-list">
+                    <li><strong>Integrated Design</strong>: Combines multiple purification methods in a single system</li>
+                    <li><strong>Biochar Filtration</strong>: Uses activated charcoal from local biomass for chemical removal</li>
+                    <li><strong>Enhanced SODIS</strong>: UV disinfection combined with thermal treatment for pathogen kill</li>
+                    <li><strong>Adaptable</strong>: Modular design allows customization for different water sources</li>
+                    <li><strong>Sustainable</strong>: Uses renewable energy and locally sourced materials</li>
+                </ul>
+            </div>
+            
+            <div class="hypothesis">
+                <h3>Research Hypothesis</h3>
+                <p>The combination of biochar filtration with solar disinfection will:</p>
+                <ol class="flow-step-list">
+                    <li>Remove organic contaminants that shield pathogens from UV radiation</li>
+                    <li>Provide additional adsorption capacity for chemicals that heat/UV cannot break down</li>
+                    <li>Create a synergistic effect where the combined system outperforms either method alone</li>
+                    <li>Reduce reliance on long SODIS exposure times through pre-filtration</li>
+                </ol>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Interactive Purification Process</h2>
+            <p>Click on each step to learn more about the purification process and the science behind it:</p>
+            
+            <div class="flowchart-container">
+                <div class="flowchart">
+                    <div class="connector"></div>
+                    
+                    <!-- Step 1 -->
+                    <div class="flow-step" id="step1">
+                        <div class="flow-step-number">1</div>
+                        <h3 class="flow-step-title">Source Water Intake</h3>
+                        <div class="flow-step-content">
+                            <ul class="flow-step-list">
+                                <li>Raw water collected from rivers, lakes, or wells</li>
+                                <li>Contains mud/silt, bacteria/viruses, chemicals, and microplastics</li>
+                                <li>Initial collection avoids heavily polluted areas</li>
+                            </ul>
+                            <div class="science-details">
+                                <h4>Scientific Basis</h4>
+                                <p>Natural water sources contain diverse contaminants. Selecting relatively clean sources reduces initial contaminant load for more effective purification.</p>
+                                <div class="science-grid">
+                                    <div class="science-item">
+                                        <div class="science-item-label">Relevance</div>
+                                        <div class="science-item-value">8/10</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Cost</div>
+                                        <div class="science-item-value">Free</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Feasibility</div>
+                                        <div class="science-item-value">10/10</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2 -->
+                    <div class="flow-step" id="step2">
+                        <div class="flow-step-number">2</div>
+                        <h3 class="flow-step-title">Pre-Filtration</h3>
+                        <div class="flow-step-content">
+                            <ul class="flow-step-list">
+                                <li>Sand and gravel bed traps suspended solids</li>
+                                <li>Removes large particles, leaves, and debris</li>
+                                <li>Significantly reduces turbidity</li>
+                            </ul>
+                            <div class="science-details">
+                                <h4>Scientific Basis</h4>
+                                <p>Physical filtration through size exclusion. Sand (0.1-1mm) and gravel (2-10mm) create interstitial spaces that trap particles while allowing water to pass.</p>
+                                <div class="science-grid">
+                                    <div class="science-item">
+                                        <div class="science-item-label">Particle Size</div>
+                                        <div class="science-item-value">>50μm</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Turbidity Reduction</div>
+                                        <div class="science-item-value">50-80%</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Cost</div>
+                                        <div class="science-item-value">Very Low</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3 -->
+                    <div class="flow-step" id="step3">
+                        <div class="flow-step-number">3</div>
+                        <h3 class="flow-step-title">Chemical Filtration</h3>
+                        <div class="flow-step-content">
+                            <ul class="flow-step-list">
+                                <li><strong>Zeolite</strong>: Removes fluoride & ammonia via ion exchange</li>
+                                <li><strong>Crushed Eggshell</strong>: Binds heavy metals (lead, cadmium)</li>
+                                <li>Begins metal ion reduction process</li>
+                            </ul>
+                            <div class="science-details">
+                                <h4>Scientific Basis</h4>
+                                <p>Zeolite's porous structure has negative charges that attract positive ions. Eggshell calcium carbonate reacts with metals to form insoluble compounds.</p>
+                                <div class="science-grid">
+                                    <div class="science-item">
+                                        <div class="science-item-label">Heavy Metal Removal</div>
+                                        <div class="science-item-value">70-90%</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Fluoride Removal</div>
+                                        <div class="science-item-value">60-80%</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Material Cost</div>
+                                        <div class="science-item-value">Low</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4 -->
+                    <div class="flow-step" id="step4">
+                        <div class="flow-step-number">4</div>
+                        <h3 class="flow-step-title">Biochar Filtration</h3>
+                        <div class="flow-step-content">
+                            <ul class="flow-step-list">
+                                <li>Activated charcoal from pyrolysis of organic materials</li>
+                                <li>Eliminates odor, color, and organic compounds</li>
+                                <li>Removes pesticides and chemicals</li>
+                            </ul>
+                            <div class="science-details">
+                                <h4>Scientific Basis</h4>
+                                <p>Biochar's high surface area (300-500 m²/g) and porous structure adsorb organic molecules through van der Waals forces and chemical bonding.</p>
+                                <div class="science-grid">
+                                    <div class="science-item">
+                                        <div class="science-item-label">Surface Area</div>
+                                        <div class="science-item-value">300-500 m²/g</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Organic Removal</div>
+                                        <div class="science-item-value">80-95%</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Cost</div>
+                                        <div class="science-item-value">Low</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5 -->
+                    <div class="flow-step" id="step5">
+                        <div class="flow-step-number">5</div>
+                        <h3 class="flow-step-title">Fine Filtration</h3>
+                        <div class="flow-step-content">
+                            <ul class="flow-step-list">
+                                <li><strong>Cloth Layer (5-20μm)</strong>: Blocks protozoa and worm eggs</li>
+                                <li><strong>Ceramic Candle (0.2-3μm)</strong>: Filters bacteria and microplastics</li>
+                            </ul>
+                            <div class="science-details">
+                                <h4>Scientific Basis</h4>
+                                <p>Physical filtration by pore size exclusion. Ceramic filters with silver impregnation provide additional antimicrobial action.</p>
+                                <div class="science-grid">
+                                    <div class="science-item">
+                                        <div class="science-item-label">Bacteria Removal</div>
+                                        <div class="science-item-value">>99%</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Flow Rate</div>
+                                        <div class="science-item-value">1-2L/hr</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Lifespan</div>
+                                        <div class="science-item-value">6-12 months</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 6 -->
+                    <div class="flow-step" id="step6">
+                        <div class="flow-step-number">6</div>
+                        <h3 class="flow-step-title">Solar Disinfection (SODIS)</h3>
+                        <div class="flow-step-content">
+                            <ul class="flow-step-list">
+                                <li>Transparent container allows sunlight penetration</li>
+                                <li>UV-A radiation disrupts pathogen DNA</li>
+                                <li>Black-painted base enhances heating (>50°C)</li>
+                                <li>Lowers pH &lt;4.5 to improve UV kill rate</li>
+                                <li>Requires 6-24 hours of sun exposure</li>
+                            </ul>
+                            <div class="science-details">
+                                <h4>Scientific Basis</h4>
+                                <p>UV-A (320-400nm) causes thymine dimer formation in DNA. Heat denatures proteins. Combined effect achieves 4-6 log reduction of pathogens.</p>
+                                <div class="science-grid">
+                                    <div class="science-item">
+                                        <div class="science-item-label">Pathogen Kill</div>
+                                        <div class="science-item-value">99.9-99.99%</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Temperature</div>
+                                        <div class="science-item-value">50-60°C</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Energy Cost</div>
+                                        <div class="science-item-value">Free</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 7 -->
+                    <div class="flow-step" id="step7">
+                        <div class="flow-step-number">7</div>
+                        <h3 class="flow-step-title">Final Output</h3>
+                        <div class="flow-step-content">
+                            <ul class="flow-step-list">
+                                <li>Free of pathogens (bacteria, viruses, protozoa)</li>
+                                <li>Reduced chemical contaminants</li>
+                                <li>Clear and safe for consumption</li>
+                                <li>pH balanced (6.5-8.5)</li>
+                            </ul>
+                            <div class="science-details">
+                                <h4>Quality Standards</h4>
+                                <p>Meets WHO guidelines for drinking water: 0 CFU/100mL bacteria, &lt;1 NTU turbidity, &lt;1000μS/cm conductivity, no detectable chemicals.</p>
+                                <div class="science-grid">
+                                    <div class="science-item">
+                                        <div class="science-item-label">Turbidity</div>
+                                        <div class="science-item-value">&lt;1 NTU</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Bacteria</div>
+                                        <div class="science-item-value">0 CFU</div>
+                                    </div>
+                                    <div class="science-item">
+                                        <div class="science-item-label">Chemical Free</div>
+                                        <div class="science-item-value">>95%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>System Performance Metrics</h2>
+            
+            <table class="relevance-table">
+                <thead>
+                    <tr>
+                        <th>Purification Step</th>
+                        <th>Relevance (1-10)</th>
+                        <th>Low-Cost</th>
+                        <th>Lab-Free Feasibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Source Intake</td>
+                        <td>8</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Sand/Gravel Pre-Filtration</td>
+                        <td>9</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Zeolite/Eggshell</td>
+                        <td>7</td>
+                        <td>9</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td>Biochar Filtration</td>
+                        <td>8</td>
+                        <td>9</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>Cloth/Ceramic</td>
+                        <td>9</td>
+                        <td>7</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>SODIS</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr style="font-weight: bold; background-color: rgba(44, 120, 115, 0.1);">
+                        <td>Overall System</td>
+                        <td>9</td>
+                        <td>9</td>
+                        <td>9</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="highlight-box">
+                <h3>Why This Combination Works</h3>
+                <ol class="flow-step-list">
+                    <li><strong>Synergistic Effect</strong>: Each step targets different contaminants - physical, chemical, and biological</li>
+                    <li><strong>Multi-Barrier Protection</strong>: Redundancy ensures safety if one step is less effective</li>
+                    <li><strong>Adaptability</strong>: Can be modified for different water quality challenges</li>
+                    <li><strong>Energy Efficiency</strong>: Uses gravity flow and solar energy with no electricity</li>
+                </ol>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Optimization & Future Improvements</h2>
+            
+            <div class="improvements">
+                <div class="improvement-card">
+                    <h3>Biochar Enhancement</h3>
+                    <p>Test different feedstocks (coconut, bamboo, rice husk) and pyrolysis temperatures to optimize adsorption capacity.</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>SODIS Boosters</h3>
+                    <p>Investigate natural pH reducers (lemon, hibiscus) and reflective surfaces to increase UV exposure.</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>Modular Design</h3>
+                    <p>Develop interchangeable filter cartridges for specific contaminants (fluoride, arsenic, etc.).</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>Prototyping and Validation of Biochar-SODIS Water Purification System | Open Source Solution for Clean Water Access</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make flowchart steps interactive
+            const steps = document.querySelectorAll('.flow-step');
+            
+            steps.forEach(step => {
+                // Click handler for each step
+                step.addEventListener('click', function() {
+                    // Close all other steps
+                    steps.forEach(s => {
+                        if (s !== this) {
+                            s.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current step
+                    this.classList.toggle('active');
+                });
+                
+                // Add keyboard accessibility
+                step.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+                
+                // Make steps focusable
+                step.setAttribute('tabindex', '0');
+            });
+            
+            // Animate elements as they come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            // Observe all sections and steps
+            document.querySelectorAll('.section, .flow-step').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+            
+            // Open first step by default on larger screens
+            if (window.innerWidth >= 768) {
+                document.querySelector('.flow-step').classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
